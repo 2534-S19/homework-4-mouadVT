@@ -7,7 +7,7 @@ int main(void)
     char *response = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
     int i = 0; // the symbol to run the string in the while loop
     // TODO: Declare the variables that main uses to interact with your state machine.
-    int pass;
+    int let;
     char key;
     bool finished;
 /*    bool All_done(key){
@@ -77,11 +77,11 @@ int main(void)
                 }
                 if (charFSM(rChar)|| (rChar == '4') )
                 {
-                    pass = 1;
+                    let = 1;
                 }
                 else
                 {
-                    pass = 0;
+                    let = 0;
                 }
 
 
@@ -90,7 +90,7 @@ int main(void)
                 //       Make sure to reset the success variable after transmission.
 
 
-                   if (pass == 1) // if condition satisfied the while loop start acting
+                   if (let == 1) // if condition satisfied the while loop start acting
                    {
                     while (response[i] != '\0')
                     {
