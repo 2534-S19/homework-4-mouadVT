@@ -7,14 +7,7 @@ int main(void)
     char *response = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
     int i = 0; // the symbol to run the string in the while loop
     // TODO: Declare the variables that main uses to interact with your state machine.
-    int let;
-    char key;
     bool finished;
-/*    bool All_done(key){
-        if( Success_key == '\0')
-            finished = false;
- */
-    // Stops the Watchdog timer.
     initBoard();
     // TODO: Declare a UART config struct as defined in uart.h.
 
@@ -45,7 +38,7 @@ int main(void)
         // TODO: Check the receive interrupt flag to see if a received character is available.
         //       Return 0xFF if no character is available.
         if (UART_getInterruptStatus(EUSCI_A0_BASE,EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG) == EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
-            rChar = UART_receiveData(EUSCI_A0_BASE); // here the char get from mobaXterm to LaunchPad
+            rChar = UART_receiveData(EUSCI_A0_BASE); // here the char get transferred from mobaXterm to LaunchPad
         else
             rChar = 0xFF;
 
@@ -56,59 +49,34 @@ int main(void)
         {
           if (UART_getInterruptStatus(EUSCI_A0_BASE,EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG) == EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG)
             {
-                UART_transmitData(EUSCI_A0_BASE, rChar);// here the char get from LaunchPad back to mobaXterm to display
+                UART_transmitData(EUSCI_A0_BASE, rChar);   // Here the char get transferred from LaunchPad back to mobaXterm to be displayed
             }
+            if ((rChar == '2') || (rChar == '5') || (rChar == '3')|| (rChar == '4'))
+                finished = charFSM(rChar);   // Calling the FSM to report the the output
         }
-                if ((rChar == '2'))
-                {
-                    charFSM(rChar);
-                }
-                if ((rChar == '5'))
-                {
-                    charFSM(rChar);
-                }
-                if ((rChar == '3'))
-                {
-                    charFSM(rChar);
-                }
-                if ((rChar == '4'))
-                {
-                    charFSM(rChar);
-                }
-                if (charFSM(rChar)|| (rChar == '4') )
-                {
-                    let = 1;
-                }
-                else
-                {
-                    let = 0;
-                }
 
 
                 // TODO: If the FSM indicates a successful string entry, transmit the response string.
                 //       Check the transmit interrupt flag prior to transmitting each character and moving on to the next one.
                 //       Make sure to reset the success variable after transmission.
 
-
-                   if (let == 1) // if condition satisfied the while loop start acting
-                   {
-                    while (response[i] != '\0')
-                    {
-                        if (UART_getInterruptStatus(EUSCI_A0_BASE,EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG) == EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG)
-                        {
-                            UART_transmitData(EUSCI_A0_BASE, response[i]); // each element on the string pushed to MobaXterm and displyed
-                            i++;
-                            key = response[i]; //success variable after transmission
-                        }
-                                if( key == '\0')
-                                 finished = false;
-                    }
-
-                    }
-
-
+        if (finished == true) // After the condition satisfaction the while loop start acting
+        {
+            while (response[i] != '\0')
+            {
+                if (UART_getInterruptStatus( EUSCI_A0_BASE,EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG) == EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG)
+                {
+                    UART_transmitData(EUSCI_A0_BASE, response[i]); // each element on (*response) string pushed to MobaXterm and displyed
+                    i++;
+                }
             }
+
         }
+        if (rChar == '4')     // this statment would,
+            i = 0;            // reset the success variable after transmission
+
+    }
+}
 
 
 void initBoard()
@@ -120,9 +88,9 @@ void initBoard()
 
 bool charFSM(char rChar)
 {
-    bool finished ;
+    bool finished;
 
-    typedef enum {S2, S25, S253, S2534} All_states; // there are 4 states
+    typedef enum {S2, S25, S253, S2534} All_states;   // there are 4 states this FSM needs to accomplish
     static All_states state = S2;
 
     switch (state)
@@ -196,7 +164,7 @@ bool charFSM(char rChar)
         break;
     }
 
-    return  finished;
+    return finished;
 }
 
 
